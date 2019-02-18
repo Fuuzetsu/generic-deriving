@@ -473,8 +473,18 @@ reifyDataInfo name = do
                       -- so this will always succeed.
                       DataInstance    -> DataInstance_    $ head cons
                       NewtypeInstance -> NewtypeInstance_ $ head cons
-     checkDataContext parentName ctxt $ Right (parentName, tys, cons, variant_)
+     checkDataContext parentName ctxt $ Right (parentName, tysCompat tys, cons, variant_)
   where
+-- Dirty, dirty hack that probably doesn't do the right thing.
+#if MIN_VERSION_template_haskell(2,15,0)
+    tysCompat :: [TyVarBndr] -> [Type]
+    tysCompat [] = []
+    tysCompat ((PlainTV t):ts) = VarT t : tysCompat ts
+    tysCompat ((KindedTV t _):ts) = VarT t : tysCompat ts
+#else
+    tysCompat :: [Type] -> [Type]
+    tysCompat = id
+#endif
     ns :: String
     ns = "Generics.Deriving.TH.reifyDataInfo: "
 

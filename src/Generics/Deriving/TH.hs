@@ -345,7 +345,7 @@ deriveInstCommon genericName repName gClass fromName toName opts n = do
   let origSigTy = if useKindSigs
                      then SigT origTy origKind
                      else origTy
-  tyIns <- tySynInstDCompat repName [return origSigTy] (return tyInsRHS)
+  tyIns <- tySynInstDCompat repName Nothing [return origSigTy] (return tyInsRHS)
   let ecOptions = emptyCaseOptions opts
       mkBody maker = [clause [] (normalB $
         mkCaseExp gClass ecOptions name instTys cons maker) []]
